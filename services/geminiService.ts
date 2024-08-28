@@ -1,7 +1,6 @@
-// service/geminiService.ts
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = process.env.GEMINI_API_KEY as string;
+const API_KEY = 'AIzaSyBZ0uwFXjWWyvi0lx6wPr7lIYCdhC3sOTo';
 
 if (!API_KEY) {
   throw new Error("GEMINI_API_KEY is not defined in environment variables");
@@ -24,7 +23,7 @@ export const processMeterImage = async (base64Image: string): Promise<string> =>
   const image = {
     inlineData: {
       data: base64Image,
-      mimeType: "image/jpg", // Assumindo que a imagem é JPG
+      mimeType: "image/webp", // Assumindo que a imagem é JPG
     },
   };
 
