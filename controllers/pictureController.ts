@@ -17,7 +17,6 @@ export const create = async (req: Request, res: Response) => {
         error_description: "Todos os campos são obrigatórios",
       });
     }
-
     if (measure_type !== "WATER" && measure_type !== "GAS") {
       return res.status(400).json({
         error_code: "INVALID_DATA",
@@ -25,29 +24,29 @@ export const create = async (req: Request, res: Response) => {
       });
     }
 
-    // Remove o prefixo 'data:image/jpeg;base64,' se presente
+    // Remove o prefixo da imagem base64
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
-
     // Processa a imagem para obter o valor da medição
     const measure_value = await processMeterImage(base64Data);
 
-    // Cria um novo documento Picture
+    // Cria um novo Picture
     const picture = new Picture({
       image,
       customer_code,
       measure_datetime,
       measure_type,
       measure_uuid: generateUUID(),
+      measure_value
     });
 
-    // Salva o documento no banco de dados
+    // Salva no banco de dados
     await picture.save();
 
     // Responde com sucesso
     res.status(200).json({
-      image_url: picture.image, // Retorna a URL da imagem, se aplicável
+      image_url: picture.image, // Retorna a URL da imagem
       measure_value: parseInt(measure_value, 10), // Retorna o valor da medição
-      measure_uuid: picture.measure_uuid,
+      measure_uuid: picture.measure_uuid // Retorna um id
     });
   } catch (error) {
     if (error instanceof Error) {

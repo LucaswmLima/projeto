@@ -8,6 +8,7 @@ interface IPicture extends Document {
   measure_type: "WATER" | "GAS";
   measure_uuid: string;
   has_confirmed: boolean;
+  measure_value: number
 }
 
 // Definição do schema
@@ -34,6 +35,9 @@ const PictureSchema: Schema = new Schema({
     required: true,
     enum: ["WATER", "GAS"],
   },
+  measure_value: {
+    type: Number,
+  },
   measure_uuid: {
     type: String,
     required: true,
@@ -43,6 +47,7 @@ const PictureSchema: Schema = new Schema({
     type: Boolean,
     default: false,
   },
+  
 });
 
 // Adiciona índice para garantir a unicidade
