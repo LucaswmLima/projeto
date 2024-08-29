@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Picture from "../models/PictureModel";
 
-export const listMeasurements = async (req: Request, res: Response) => {
+export const list = async (req: Request, res: Response) => {
   try {
     const { customer_code } = req.params;
     const { measure_type } = req.query;
@@ -14,9 +14,10 @@ export const listMeasurements = async (req: Request, res: Response) => {
       });
     }
 
-    // Filtro de busca
+    // Query para a busca
     const query: any = { customer_code };
 
+    // Verifica se tem o parametro opcional WATER ou GAS pra adicionar na query
     if (measure_type) {
       query.measure_type = (measure_type as string).toUpperCase();
     }

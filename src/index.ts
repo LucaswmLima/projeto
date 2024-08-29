@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import pictureRouter from '../routes/picture';
-import confirmPictureRouter from '../routes/confirmPicture';
+import addRouter from '../routes/addRoute';
+import confirmRouter from '../routes/confirmRoute';
 
 dotenv.config();
 require('../db/db');
@@ -13,8 +13,8 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 // Configuração das rotas
-app.use('/pictures', pictureRouter);
-app.use('/confirm', confirmPictureRouter);
+app.use('/pictures', addRouter);
+app.use('/confirm', confirmRouter);
 
 // Middleware de tratamento de erros
 app.use((err: any, req: express.Request, res: express.Response) => {
