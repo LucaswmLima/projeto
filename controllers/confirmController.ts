@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Picture from "../models/PictureModel";
 
-export const confirmMeasurement = async (req: Request, res: Response) => {
+export const confirm = async (req: Request, res: Response) => {
   try {
     const { measure_uuid, confirmed_value } = req.body;
 
@@ -42,7 +42,6 @@ export const confirmMeasurement = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (error) {
-    // Tratamento de erros genéricos
     if (error instanceof Error) {
       return res.status(500).json({
         error_code: "SERVER_ERROR",
@@ -50,7 +49,6 @@ export const confirmMeasurement = async (req: Request, res: Response) => {
       });
     }
 
-    // Caso o erro não seja uma instância de Error
     res.status(500).json({
       error_code: "SERVER_ERROR",
       error_description: "Ocorreu um erro inesperado",

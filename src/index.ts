@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import pictureRouter from '../routes/picture'; // Importação ES6
+import pictureRouter from '../routes/picture';
+import confirmPictureRouter from '../routes/confirmPicture';
 
 dotenv.config();
 require('../db/db');
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // Configuração das rotas
 app.use('/pictures', pictureRouter);
+app.use('/confirm', confirmPictureRouter);
 
 // Middleware de tratamento de erros
 app.use((err: any, req: express.Request, res: express.Response) => {

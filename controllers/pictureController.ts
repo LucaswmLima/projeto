@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Picture from "../models/PictureModel";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { processMeterImage } from "../services/geminiService";
 
 const generateUUID = (): string => uuidv4();
@@ -35,7 +35,7 @@ export const create = async (req: Request, res: Response) => {
       measure_datetime,
       measure_type,
       measure_uuid: generateUUID(),
-      measure_value
+      measure_value,
     });
 
     // Salva no banco de dados
@@ -45,7 +45,7 @@ export const create = async (req: Request, res: Response) => {
     res.status(200).json({
       image_url: picture.image, // Retorna a URL da imagem
       measure_value: parseInt(measure_value, 10), // Retorna o valor da medição
-      measure_uuid: picture.measure_uuid // Retorna um id
+      measure_uuid: picture.measure_uuid, // Retorna um id
     });
   } catch (error) {
     if (error instanceof Error) {
@@ -63,7 +63,7 @@ export const create = async (req: Request, res: Response) => {
         error_description: "Ocorreu um erro ao processar a requisição",
       });
     }
-    
+
     // Caso o erro não seja uma instância de Error
     res.status(500).json({
       error_code: "SERVER_ERROR",

@@ -23,7 +23,7 @@ export const processMeterImage = async (base64Image: string): Promise<string> =>
   const image = {
     inlineData: {
       data: base64Image,
-      mimeType: "image/webp", // Assumindo que a imagem é JPG
+      mimeType: "image/webp", // Caso imagem sejá webp
     },
   };
 
