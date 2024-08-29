@@ -16,6 +16,7 @@ export const list = async (req: Request, res: Response) => {
 
     // Query para a busca
     const query: any = { customer_code };
+    console.log("Query:", query);
 
     // Verifica se tem o parametro opcional WATER ou GAS pra adicionar na query
     if (measure_type) {
@@ -23,7 +24,7 @@ export const list = async (req: Request, res: Response) => {
     }
 
     // Busca das medições no banco de dados
-    const measures = await Picture.find(query).select("-_id measure_uuid measure_datetime measure_type has_confirmed image");
+    const measures = await Picture.find(query).select("measure_uuid measure_datetime measure_type has_confirmed image");
 
     // Verifica se encontrou medições
     if (!measures || measures.length === 0) {
