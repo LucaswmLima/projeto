@@ -8,7 +8,7 @@ export const uploadToLocalStorage = (base64Data: string, mimeType: string): stri
   
   const buffer = Buffer.from(base64String, 'base64');
   const fileName = `${uuidv4()}.${mimeType.split('/')[1]}`;
-  const filePath = path.join(__dirname, '..','uploads', fileName);
+  const filePath = path.join(__dirname, '..','public','uploads', fileName);
   
   // Salva o arquivo no sistema de arquivos
   fs.writeFileSync(filePath, buffer);
