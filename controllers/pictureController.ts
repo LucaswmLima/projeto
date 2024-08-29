@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
 import Picture from "../models/PictureModel";
-import { v4 as uuidv4 } from 'uuid'; // Usando a biblioteca uuid
-import { processMeterImage } from "../services/geminiService"; // Importando a função de processamento
+import { v4 as uuidv4 } from 'uuid';
+import { processMeterImage } from "../services/geminiService";
 
-// Função para gerar UUID
 const generateUUID = (): string => uuidv4();
 
 export const create = async (req: Request, res: Response) => {
@@ -24,7 +23,7 @@ export const create = async (req: Request, res: Response) => {
       });
     }
 
-    // Remove o prefixo da imagem base64
+    // Trata a string da base 64
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
     // Processa a imagem para obter o valor da medição
     const measure_value = await processMeterImage(base64Data);
