@@ -6,8 +6,11 @@ export const list = async (req: Request, res: Response) => {
     const { customer_code } = req.params;
     const { measure_type } = req.query;
 
-    // Verificação do tipo de medição (opcional)
-    if (measure_type && !["WATER", "GAS"].includes((measure_type as string).toUpperCase())) {
+    // Verifica se a query opcional está certa
+    if (
+      measure_type &&
+      !["WATER", "GAS"].includes((measure_type as string).toUpperCase())
+    ) {
       return res.status(400).json({
         error_code: "INVALID_TYPE",
         error_description: "Tipo de medição não permitida",
@@ -24,7 +27,9 @@ export const list = async (req: Request, res: Response) => {
     }
 
     // Busca das medições no banco de dados
-    const measures = await Picture.find(query).select("measure_uuid measure_datetime measure_type has_confirmed image");
+    const measures = await Picture.find(query).select(
+      "measure_uuid measure_datetime measure_type has_confirmed image"
+    );
 
     // Verifica se encontrou medições
     if (!measures || measures.length === 0) {
@@ -37,27 +42,18 @@ export const list = async (req: Request, res: Response) => {
     // Responde com a lista de medições
     return res.status(200).json({
       customer_code,
-      measures: measures.map(measure => ({
+      measures: measures.map((measure) => ({
         measure_uuid: measure.measure_uuid,
         measure_datetime: measure.measure_datetime,
         measure_type: measure.measure_type,
         has_confirmed: measure.has_confirmed,
         image_url: measure.image, // Pode adaptar se for necessário gerar um link de acesso à imagem
-      }))
+      })),
     });
   } catch (error) {
-    // Tratamento de erros genéricos
-    if (error instanceof Error) {
-      return res.status(500).json({
-        error_code: "SERVER_ERROR",
-        error_description: "Ocorreu um erro ao processar a requisição",
-      });
-    }
-
-    // Caso o erro não seja uma instância de Error
     res.status(500).json({
       error_code: "SERVER_ERROR",
-      error_description: "Ocorreu um erro inesperado",
+      error_description: "Ocorreu um erro ao processar a requisição",
     });
   }
 };

@@ -3,11 +3,14 @@ import Picture from "../models/PictureModel";
 import { v4 as uuidv4 } from "uuid";
 import { processMeterImage } from "../services/geminiService";
 
+// Codigo para gerar o id unico para as leituras
 const generateUUID = (): string => uuidv4();
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const { image, customer_code, measure_datetime, measure_type } = req.body;
+    // Recebendo dados, measure_type em variavel para que possa ser convertido uppercase
+    const { image, customer_code, measure_datetime } = req.body;
+    let { measure_type } = req.body;
 
     // Validação dos dados recebidos
     if (!image || !customer_code || !measure_datetime || !measure_type) {
@@ -16,6 +19,11 @@ export const create = async (req: Request, res: Response) => {
         error_description: "Todos os campos são obrigatórios",
       });
     }
+
+    //Transforma para uppcase
+    measure_type = measure_type.toUpperCase();
+
+    // Verificação do tipo de medição com tratamento de capitalização
     if (measure_type !== "WATER" && measure_type !== "GAS") {
       return res.status(400).json({
         error_code: "INVALID_DATA",
@@ -25,8 +33,16 @@ export const create = async (req: Request, res: Response) => {
 
     // Verificação de duplicidade
     const measureDate = new Date(measure_datetime);
-    const startOfMonth = new Date(measureDate.getFullYear(), measureDate.getMonth(), 1);
-    const endOfMonth = new Date(measureDate.getFullYear(), measureDate.getMonth() + 1, 1);
+    const startOfMonth = new Date(
+      measureDate.getFullYear(),
+      measureDate.getMonth(),
+      1
+    );
+    const endOfMonth = new Date(
+      measureDate.getFullYear(),
+      measureDate.getMonth() + 1,
+      1
+    );
 
     const existingPicture = await Picture.findOne({
       customer_code,
@@ -43,8 +59,6 @@ export const create = async (req: Request, res: Response) => {
         error_description: "Leitura do mês já realizada",
       });
     }
-    
-    
 
     // Trata a string da base 64
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
@@ -59,7 +73,6 @@ export const create = async (req: Request, res: Response) => {
         error_description: "Erro ao processar a imagem.",
       });
     }
-    
 
     // Cria um novo Picture
     const picture = new Picture({
@@ -81,7 +94,6 @@ export const create = async (req: Request, res: Response) => {
       measure_uuid: picture.measure_uuid, // Retorna um id
     });
   } catch (error) {
-    console.error("Erro durante a criação da medição:", error); // Log do erro para ajudar na depuração
     return res.status(500).json({
       error_code: "SERVER_ERROR",
       error_description: "Ocorreu um erro ao processar a requisição",
