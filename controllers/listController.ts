@@ -39,7 +39,7 @@ export const list = async (req: Request, res: Response) => {
       });
     }
 
-    // Responde com a lista de medições
+    // Responde com a lista de medições caso tudo ocorra bem
     return res.status(200).json({
       customer_code,
       measures: measures.map((measure) => ({

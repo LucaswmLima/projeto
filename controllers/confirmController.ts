@@ -43,7 +43,7 @@ export const confirm = async (req: Request, res: Response) => {
     // Salva as alterações no banco de dados
     await measure.save();
 
-    // Responde com sucesso
+    // Resposta caso tudo ocorra bem
     res.status(200).json({
       success: true,
     });
