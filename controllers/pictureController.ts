@@ -23,10 +23,43 @@ export const create = async (req: Request, res: Response) => {
       });
     }
 
+    // Verificação de duplicidade
+    const measureDate = new Date(measure_datetime);
+    const startOfMonth = new Date(measureDate.getFullYear(), measureDate.getMonth(), 1);
+    const endOfMonth = new Date(measureDate.getFullYear(), measureDate.getMonth() + 1, 1);
+
+    const existingPicture = await Picture.findOne({
+      customer_code,
+      measure_type,
+      measure_datetime: {
+        $gte: startOfMonth,
+        $lt: endOfMonth,
+      },
+    });
+
+    if (existingPicture) {
+      return res.status(409).json({
+        error_code: "DOUBLE_REPORT",
+        error_description: "Leitura do mês já realizada",
+      });
+    }
+    
+    
+
     // Trata a string da base 64
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
-    // Processa a imagem para obter o valor da medição
-    const measure_value = await processMeterImage(base64Data);
+    let measure_value;
+    try {
+      // Processa a imagem para obter o valor da medição
+      measure_value = await processMeterImage(base64Data);
+    } catch (err) {
+      console.error("Erro ao processar a imagem:", err);
+      return res.status(500).json({
+        error_code: "IMAGE_PROCESSING_ERROR",
+        error_description: "Erro ao processar a imagem.",
+      });
+    }
+    
 
     // Cria um novo Picture
     const picture = new Picture({
@@ -48,27 +81,10 @@ export const create = async (req: Request, res: Response) => {
       measure_uuid: picture.measure_uuid, // Retorna um id
     });
   } catch (error) {
-    if (error instanceof Error) {
-      if ((error as any).code === 11000) {
-        // Código de erro de duplicação de índice
-        return res.status(409).json({
-          error_code: "DOUBLE_REPORT",
-          error_description: "Leitura do mês já realizada",
-        });
-      }
-
-      // Outros erros
-      return res.status(500).json({
-        error_code: "SERVER_ERROR",
-        error_description: "Ocorreu um erro ao processar a requisição",
-      });
-    }
-
-    // Caso o erro não seja uma instância de Error
-    res.status(500).json({
+    console.error("Erro durante a criação da medição:", error); // Log do erro para ajudar na depuração
+    return res.status(500).json({
       error_code: "SERVER_ERROR",
-      error_description: "Ocorreu um erro inesperado",
+      error_description: "Ocorreu um erro ao processar a requisição",
     });
   }
 };
-

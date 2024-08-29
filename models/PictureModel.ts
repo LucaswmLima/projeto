@@ -37,6 +37,7 @@ const PictureSchema: Schema = new Schema({
   },
   measure_value: {
     type: Number,
+    required: true,
   },
   measure_uuid: {
     type: String,
@@ -49,12 +50,6 @@ const PictureSchema: Schema = new Schema({
   },
   
 });
-
-// Adiciona índice para garantir a unicidade
-PictureSchema.index(
-  { customer_code: 1, measure_type: 1, measure_datetime: 1 },
-  { unique: true }
-);
 
 const Picture = mongoose.model<IPicture>("Picture", PictureSchema);
 export default Picture;
