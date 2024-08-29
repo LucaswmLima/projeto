@@ -4,13 +4,20 @@ import Picture from '../models/PictureModel';
 import { v4 as uuidv4 } from 'uuid';
 import { processMeterImage } from '../services/geminiService';
 
+// Gera ID unico
 const generateUUID = (): string => uuidv4();
+
+// Função de validação de base64
+const isValidBase64Image = (base64Data: string): boolean => {
+  return /^data:image\/\w+;base64,/.test(base64Data);
+};
 
 export const create = async (req: Request, res: Response) => {
   try {
     const { image, customer_code, measure_datetime } = req.body;
     let { measure_type } = req.body;
 
+    // Validade se todos os campos estão sendo enviados
     if (!image || !customer_code || !measure_datetime || !measure_type) {
       return res.status(400).json({
         error_code: 'INVALID_DATA',
@@ -18,6 +25,15 @@ export const create = async (req: Request, res: Response) => {
       });
     }
 
+    // Valida o formato base64 da imagem enviada
+    if (!isValidBase64Image(image)) {
+      return res.status(400).json({
+        error_code: "INVALID_DATA",
+        error_description: "Formato da imagem base64 inválido"
+      });
+    }
+
+    //Valida o tipo de medição
     measure_type = measure_type.toUpperCase();
 
     if (measure_type !== 'WATER' && measure_type !== 'GAS') {
@@ -27,6 +43,7 @@ export const create = async (req: Request, res: Response) => {
       });
     }
 
+    //Encontra as datas para usar na validação de tempo
     const measureDate = new Date(measure_datetime);
     const startOfMonth = new Date(
       measureDate.getFullYear(),
@@ -48,6 +65,7 @@ export const create = async (req: Request, res: Response) => {
       },
     });
 
+    // Valida por tempo
     if (existingPicture) {
       return res.status(409).json({
         error_code: 'DOUBLE_REPORT',
@@ -55,6 +73,7 @@ export const create = async (req: Request, res: Response) => {
       });
     }
 
+    // Processa a imagem no serviço do google
     const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
     let measure_value;
     try {
@@ -67,8 +86,10 @@ export const create = async (req: Request, res: Response) => {
       });
     }
 
+    // Faz upload da imagem no serviço de storage local e gera o link
     const imageUrl = uploadToLocalStorage(base64Data, 'image/jpeg'); // Define o tipo de conteúdo conforme necessário
 
+    // Cria a picture que irá ser salva
     const picture = new Picture({
       image_url: imageUrl,
       customer_code,
@@ -78,8 +99,10 @@ export const create = async (req: Request, res: Response) => {
       measure_value,
     });
 
+    // Salva no banco
     await picture.save();
 
+    // Resposta caso tudo ocorra bem
     res.status(200).json({
       image_url: imageUrl,
       measure_value: parseInt(measure_value, 10),

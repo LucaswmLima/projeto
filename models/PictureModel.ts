@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-// Definição da interface do schema
+// Interface do Schema
 interface IPicture extends Document {
   image_url: string;
   customer_code: string;
@@ -11,7 +11,7 @@ interface IPicture extends Document {
   measure_value: number
 }
 
-// Definição do schema
+// Definição do Schema
 const PictureSchema: Schema = new Schema({
   image_url: {
     type: String,
