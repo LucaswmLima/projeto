@@ -28,7 +28,7 @@ export const list = async (req: Request, res: Response) => {
 
     // Busca das medições no banco de dados
     const measures = await Picture.find(query).select(
-      "measure_uuid measure_datetime measure_type has_confirmed image"
+      "measure_uuid measure_datetime measure_type has_confirmed image_url"
     );
 
     // Verifica se encontrou medições
@@ -47,7 +47,7 @@ export const list = async (req: Request, res: Response) => {
         measure_datetime: measure.measure_datetime,
         measure_type: measure.measure_type,
         has_confirmed: measure.has_confirmed,
-        image_url: measure.image, // Pode adaptar se for necessário gerar um link de acesso à imagem
+        image_url: measure.image_url,
       })),
     });
   } catch (error) {

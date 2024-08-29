@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import addRouter from '../routes/addRoute';
 import confirmRouter from '../routes/confirmRoute';
 import listRouter from '../routes/listRoute';
+import path from 'path';
 
 dotenv.config();
 require('../db/db');
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/add', addRouter);
 app.use('/confirm', confirmRouter);
 app.use('/', listRouter);
+app.use('/uploads', express.static('uploads'));
 
 // Middleware de tratamento de erros
 app.use((err: any, req: express.Request, res: express.Response) => {

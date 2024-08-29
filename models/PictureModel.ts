@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 // Definição da interface do schema
 interface IPicture extends Document {
-  image: string;
+  image_url: string;
   customer_code: string;
   measure_datetime: Date;
   measure_type: "WATER" | "GAS";
@@ -13,14 +13,9 @@ interface IPicture extends Document {
 
 // Definição do schema
 const PictureSchema: Schema = new Schema({
-  image: {
+  image_url: {
     type: String,
     required: true,
-    validate: {
-      validator: (value: string) =>
-        /^data:image\/[a-zA-Z]+;base64,/.test(value),
-      message: "Formato da imagem base64 inválido",
-    },
   },
   customer_code: {
     type: String,

@@ -10,7 +10,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@google-cloud/storage": "^7.12.1",
     "@google/generative-ai": "^0.17.1",
     "axios": "^1.7.5",
     "dotenv": "^16.4.5",
