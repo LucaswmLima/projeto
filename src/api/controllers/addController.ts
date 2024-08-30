@@ -1,88 +1,48 @@
 import { Request, Response } from "express";
 import { uploadToLocalStorage } from "../services/storageService";
-import Picture from "../models/PictureModel";
-import { v4 as uuidv4 } from "uuid";
+import Measure from "../models/MeasureModel";
 import { processMeterImage } from "../services/geminiService";
-
-// Gera ID unico
-const generateUUID = (): string => uuidv4();
-
-// Função de validação de base64
-const isValidBase64Image = (base64Data: string): boolean => {
-  return /^data:image\/\w+;base64,/.test(base64Data);
-};
+import {
+  validateRequiredFields,
+  validateBase64Image,
+  validateMeasureType,
+  validateDateFormat,
+  validateDuplicateReading,
+} from "../validations/addValidations";
+import { generateUUID } from "../utils/helpers";
 
 export const create = async (req: Request, res: Response) => {
   try {
     const { image, customer_code, measure_datetime } = req.body;
     let { measure_type } = req.body;
-
-    // Validade se todos os campos estão sendo enviados
-    if (!image || !customer_code || !measure_datetime || !measure_type) {
-      return res.status(400).json({
-        error_code: "INVALID_DATA",
-        error_description: "Todos os campos são obrigatórios",
-      });
-    }
-
-    // Valida o formato base64 da imagem enviada
-    if (!isValidBase64Image(image)) {
-      return res.status(400).json({
-        error_code: "INVALID_DATA",
-        error_description: "Formato da imagem base64 inválido",
-      });
-    }
-
-    //Valida o tipo de medição
     measure_type = measure_type.toUpperCase();
 
-    if (measure_type !== "WATER" && measure_type !== "GAS") {
-      return res.status(400).json({
-        error_code: "INVALID_DATA",
-        error_description: "O tipo de medição deve ser 'WATER' ou 'GAS'",
-      });
-    }
-
-    // Validação do formato da data
-    const date = new Date(measure_datetime);
-    if (isNaN(date.getTime())) {
-      return res.status(400).json({
-        error_code: "INVALID_DATA",
-        error_description: "Formato de data/hora inválido",
-      });
-    }
-
-    //Encontra as datas para usar na validação de tempo
-    const measureDate = new Date(measure_datetime);
-    const startOfMonth = new Date(
-      measureDate.getFullYear(),
-      measureDate.getMonth(),
-      1
-    );
-    const endOfMonth = new Date(
-      measureDate.getFullYear(),
-      measureDate.getMonth() + 1,
-      1
-    );
-
-    const existingPicture = await Picture.findOne({
+    // Valida se todos os campos estão sendo enviados
+    let validationResult = validateRequiredFields(
+      image,
       customer_code,
-      measure_type,
-      measure_datetime: {
-        $gte: startOfMonth,
-        $lt: endOfMonth,
-      },
-    });
+      measure_datetime,
+      measure_type
+    );
+    if (!validationResult.valid) return res.status(400).json(validationResult);
 
-    // Valida por tempo
-    if (existingPicture) {
-      return res.status(409).json({
-        error_code: "DOUBLE_REPORT",
-        error_description: "Leitura do mês já realizada",
-      });
-    }
+    // Valida o formato base64 da imagem
+    validationResult = validateBase64Image(image);
+    if (!validationResult.valid) return res.status(400).json(validationResult);
 
-    // Processa a imagem no serviço do google
+    // Valida o tipo de medição
+    validationResult = validateMeasureType(measure_type);
+    if (!validationResult.valid) return res.status(400).json(validationResult);
+
+    // Valida o formato da data
+    validationResult = validateDateFormat(measure_datetime);
+    if (!validationResult.valid) return res.status(400).json(validationResult);
+
+    // Valida se a leitura já foi feita no mes
+    validationResult = await validateDuplicateReading(customer_code, measure_type, new Date(measure_datetime));
+    if (!validationResult.valid) return res.status(409).json(validationResult);
+
+    // Processa a imagem no serviço do Google
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
     let measure_value;
     try {
@@ -99,7 +59,7 @@ export const create = async (req: Request, res: Response) => {
     const imageUrl = uploadToLocalStorage(base64Data, "image/jpeg"); // Define o tipo de conteúdo conforme necessário
 
     // Cria a picture que irá ser salva
-    const picture = new Picture({
+    const measure = new Measure({
       image_url: imageUrl,
       customer_code,
       measure_datetime,
@@ -109,13 +69,13 @@ export const create = async (req: Request, res: Response) => {
     });
 
     // Salva no banco
-    await picture.save();
+    await measure.save();
 
     // Resposta caso tudo ocorra bem
     res.status(200).json({
       image_url: imageUrl,
       measure_value: parseInt(measure_value, 10),
-      measure_uuid: picture.measure_uuid,
+      measure_uuid: measure.measure_uuid,
     });
   } catch (error) {
     return res.status(500).json({

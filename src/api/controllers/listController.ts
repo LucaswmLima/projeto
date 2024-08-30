@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Picture from "../models/PictureModel";
+import Picture from "../models/MeasureModel";
 
 export const list = async (req: Request, res: Response) => {
   try {
