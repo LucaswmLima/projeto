@@ -43,6 +43,15 @@ export const create = async (req: Request, res: Response) => {
       });
     }
 
+    // Validação do formato da data
+    const date = new Date(measure_datetime);
+    if (isNaN(date.getTime())) {
+      return res.status(400).json({
+        error_code: 'INVALID_DATA',
+        error_description: 'Formato de data/hora inválido',
+      });
+    }
+
     //Encontra as datas para usar na validação de tempo
     const measureDate = new Date(measure_datetime);
     const startOfMonth = new Date(
