@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import addRouter from './api/routes/addRoute';
 import confirmRouter from './api/routes/confirmRoute';
 import listRouter from './api/routes/listRoute';
-import path from 'path';
 
 dotenv.config();
 

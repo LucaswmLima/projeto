@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import Picture from "../models/MeasureModel";
-import { validateMeasureType, validateCustomerCode } from "../validations/listValidations";
+import {
+  validateMeasureType,
+  validateCustomerCode,
+  validateMeasuresFound,
+} from "../validations/listValidations";
 
 export const list = async (req: Request, res: Response) => {
   try {
@@ -9,6 +13,14 @@ export const list = async (req: Request, res: Response) => {
 
     // Query para a busca
     const query: any = { customer_code };
+
+    // Valida o campo customer_code
+    let validationResult = validateCustomerCode(customer_code);
+    if (!validationResult.valid) return res.status(400).json(validationResult);
+
+    // Valida o campo measure_type
+    validationResult = validateMeasureType(measure_type);
+    if (!validationResult.valid) return res.status(400).json(validationResult);
 
     // Verifica se tem o parametro opcional WATER ou GAS pra adicionar na query
     if (measure_type) {
@@ -20,13 +32,9 @@ export const list = async (req: Request, res: Response) => {
       "measure_uuid measure_datetime measure_type has_confirmed image_url"
     );
 
-    // Valida o campo customer_code
-    let validationResult = validateCustomerCode(customer_code);
-    if (!validationResult.valid) return res.status(400).json(validationResult);
-
-    // Valida o campo measure_type
-    validationResult = validateMeasureType(measure_type);
-    if (!validationResult.valid) return res.status(400).json(validationResult);
+    // Verifica se encontrou medições
+    validationResult = validateMeasuresFound(measures);
+    if (!validationResult.valid) return res.status(404).json(validationResult);
 
     // Responde com a lista de medições caso tudo ocorra bem
     return res.status(200).json({
