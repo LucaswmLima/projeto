@@ -8,6 +8,6 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'json', 'html'],
     },
-    include: ['src/**/*.test.ts'], // Ajuste o caminho conforme necessário
+    include: ['src/**/*.test.ts','*/*.test.ts'], // Ajuste o caminho conforme necessário
   },
 });
