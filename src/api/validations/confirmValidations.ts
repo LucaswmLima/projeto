@@ -7,7 +7,7 @@ export const validateRequestData = (
     // Mensagens de erro específicas
     let error_description = "";
   
-    // Verifica se measure_uuid é uma string e se não é uma string vazia
+    // Verifica se measure_uuid é uma string e não está vazia
     if (typeof measure_uuid !== "string") {
       error_description += "O campo 'measure_uuid' deve ser uma string. ";
     } else if (measure_uuid.trim() === "") {
@@ -19,12 +19,12 @@ export const validateRequestData = (
       error_description += "O campo 'confirmed_value' deve ser um número. ";
     }
   
-    // Verifica se measure_uuid está presente (caso seja uma string vazia)
+    // Verifica se tem measure_uuid na requisição
     if (!measure_uuid) {
       error_description += "O campo 'measure_uuid' é obrigatório. ";
     }
   
-    // Verifica se confirmed_value está presente
+    // Verifica se tem confirmed_value na requisição
     if (!confirmed_value) {
       error_description += "O campo 'confirmed_value' é obrigatório. ";
     }
@@ -46,7 +46,7 @@ export const checkConfirmationStatus = (measure: IMeasure) => {
     return {
       valid: false,
       error_code: "CONFIRMATION_DUPLICATE",
-      error_description: "Leitura já confirmada",
+      error_description: "Leitura do mês já realizada",
     };
   }
   return { valid: true };

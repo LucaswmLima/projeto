@@ -19,6 +19,18 @@ export const validateRequiredFields = (
   return { valid: true };
 };
 
+// Validador do customer_code
+export const validateCustomerCode = (customer_code: any) => {
+  if (typeof customer_code !== "string") {
+    return {
+      valid: false,
+      error_code: "INVALID_DATA",
+      error_description: "O campo 'customer_code' deve ser uma string",
+    };
+  }
+  return { valid: true };
+};
+
 // validador da imagem
 export const validateBase64Image = (image: string): IValidationResult => {
   if (!/^data:image\/\w+;base64,/.test(image)) {
@@ -46,11 +58,22 @@ export const validateMeasureType = (
   return { valid: true };
 };
 
-// Validador da data
 export const validateDateFormat = (
   measure_datetime: string
 ): IValidationResult => {
+  // Verifica se o valor é uma string
+  if (typeof measure_datetime !== "string") {
+    return {
+      valid: false,
+      error_code: "INVALID_DATA",
+      error_description: "O campo 'measure_datetime' deve ser uma string representando a data e hora no formato ISO 8601",
+    };
+  }
+
+  // Tenta criar um objeto Date a partir da string
   const date = new Date(measure_datetime);
+
+  // Verifica se a data criada é inválida
   if (isNaN(date.getTime())) {
     return {
       valid: false,
@@ -58,6 +81,7 @@ export const validateDateFormat = (
       error_description: "Formato de data/hora inválido",
     };
   }
+
   return { valid: true };
 };
 

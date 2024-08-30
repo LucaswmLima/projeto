@@ -8,6 +8,7 @@ import {
   validateMeasureType,
   validateDateFormat,
   validateDuplicateReading,
+  validateCustomerCode,
 } from "../validations/addValidations";
 import { generateUUID } from "../utils/helpers";
 
@@ -28,6 +29,10 @@ export const create = async (req: Request, res: Response) => {
 
     // Valida o formato base64 da imagem
     validationResult = validateBase64Image(image);
+    if (!validationResult.valid) return res.status(400).json(validationResult);
+
+    // Valida o campo customer_code
+    validationResult = validateCustomerCode(customer_code);
     if (!validationResult.valid) return res.status(400).json(validationResult);
 
     // Valida o tipo de medição

@@ -1,3 +1,5 @@
+
+// Validator da query de tipo de medição
 export const validateMeasureType = (measure_type: any) => {
   if (
     measure_type &&
@@ -12,6 +14,7 @@ export const validateMeasureType = (measure_type: any) => {
   return { valid: true };
 };
 
+// Validador do customer_code
 export const validateCustomerCode = (customer_code: String) => {
   if (typeof customer_code !== "string" || customer_code.trim() === "") {
     return {
@@ -24,7 +27,7 @@ export const validateCustomerCode = (customer_code: String) => {
   return { valid: true };
 };
 
-// Função de validação para verificar se foram encontradas medições
+// Validador que verica se foram encontradas medições
 export const validateMeasuresFound = (measures: any[]) => {
   if (!measures || measures.length === 0) {
     return {
