@@ -1,18 +1,8 @@
-import mongoose, { Document, Schema } from "mongoose";
-
-// Interface do Schema
-interface IPicture extends Document {
-  image_url: string;
-  customer_code: string;
-  measure_datetime: Date;
-  measure_type: "WATER" | "GAS";
-  measure_uuid: string;
-  has_confirmed: boolean;
-  measure_value: number
-}
+import mongoose, { Schema } from 'mongoose';
+import { IMeasure } from '../interfaces/measure';
 
 // Definição do Schema
-const PictureSchema: Schema = new Schema({
+const MeasureSchema: Schema<IMeasure> = new Schema({
   image_url: {
     type: String,
     required: true,
@@ -28,7 +18,7 @@ const PictureSchema: Schema = new Schema({
   measure_type: {
     type: String,
     required: true,
-    enum: ["WATER", "GAS"],
+    enum: ['WATER', 'GAS'],
   },
   measure_value: {
     type: Number,
@@ -43,8 +33,7 @@ const PictureSchema: Schema = new Schema({
     type: Boolean,
     default: false,
   },
-  
 });
 
-const Picture = mongoose.model<IPicture>("Picture", PictureSchema);
-export default Picture;
+const Measures = mongoose.model<IMeasure>('Measure', MeasureSchema);
+export default Measures;
