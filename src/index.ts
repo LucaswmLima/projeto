@@ -17,7 +17,7 @@ app.use(express.json());
 app.use('/add', addRouter);
 app.use('/confirm', confirmRouter);
 app.use('/', listRouter);
-app.use('/uploads', express.static('public/uploads'));
+app.use('/uploads', express.static('src/api/public/uploads'));
 
 app.listen(port, () => {
   console.log(`O servidor está rodando na porta ${port}`);
