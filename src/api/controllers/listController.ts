@@ -1,21 +1,11 @@
 import { Request, Response } from "express";
 import Picture from "../models/MeasureModel";
+import { validateMeasureType, validateCustomerCode } from "../validations/listValidations";
 
 export const list = async (req: Request, res: Response) => {
   try {
     const { customer_code } = req.params;
     const { measure_type } = req.query;
-
-    // Verifica se a query opcional está certa
-    if (
-      measure_type &&
-      !["WATER", "GAS"].includes((measure_type as string).toUpperCase())
-    ) {
-      return res.status(400).json({
-        error_code: "INVALID_TYPE",
-        error_description: "Tipo de medição não permitida",
-      });
-    }
 
     // Query para a busca
     const query: any = { customer_code };
@@ -30,13 +20,13 @@ export const list = async (req: Request, res: Response) => {
       "measure_uuid measure_datetime measure_type has_confirmed image_url"
     );
 
-    // Verifica se encontrou medições
-    if (!measures || measures.length === 0) {
-      return res.status(404).json({
-        error_code: "MEASURES_NOT_FOUND",
-        error_description: "Nenhuma leitura encontrada",
-      });
-    }
+    // Valida o campo customer_code
+    let validationResult = validateCustomerCode(customer_code);
+    if (!validationResult.valid) return res.status(400).json(validationResult);
+
+    // Valida o campo measure_type
+    validationResult = validateMeasureType(measure_type);
+    if (!validationResult.valid) return res.status(400).json(validationResult);
 
     // Responde com a lista de medições caso tudo ocorra bem
     return res.status(200).json({
