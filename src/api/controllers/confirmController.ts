@@ -1,40 +1,29 @@
 import { Request, Response } from "express";
+import { validateRequestData, checkConfirmationStatus } from "../validations/confirmValidations";
 import Picture from "../models/MeasureModel";
 
 export const confirm = async (req: Request, res: Response) => {
   try {
     const { measure_uuid, confirmed_value } = req.body;
 
-    // Validação dos dados recebidos
-    if (
-      typeof measure_uuid !== "string" ||
-      typeof confirmed_value !== "number"
-    ) {
-      return res.status(400).json({
-        error_code: "INVALID_DATA",
-        error_description:
-          "Dados fornecidos no corpo da requisição são inválidos",
-      });
-    }
-
-    // Armazena a busca na variavel measure para validações
+    // Armazena a busca na variável measure para validações adicionais
     const measure = await Picture.findOne({ measure_uuid });
 
-    // Verifica se a leitura existe
+    // Valida os dados recebidos
+    let validationResult = validateRequestData(measure_uuid, confirmed_value);
+    if (!validationResult.valid) return res.status(400).json(validationResult);
+
+    // Valida se a leitura foi encontrada
     if (!measure) {
       return res.status(404).json({
         error_code: "MEASURE_NOT_FOUND",
-        error_description: "Leitura do mês já realizada", //Leitura não encontrada
+        error_description: "Leitura do mês já realizada",
       });
     }
 
-    // Verifica se a leitura já foi confirmada
-    if (measure.has_confirmed) {
-      return res.status(409).json({
-        error_code: "CONFIRMATION_DUPLICATE",
-        error_description: "Leitura do mês já realizada", //Leitura já realizada
-      });
-    }
+    // Verifica o status de confirmação da leitura
+    validationResult = checkConfirmationStatus(measure);
+    if (!validationResult.valid) return res.status(409).json(validationResult);
 
     // Atualiza o valor confirmado e marca a leitura como confirmada
     measure.measure_value = confirmed_value;
