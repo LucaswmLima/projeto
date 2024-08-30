@@ -1,12 +1,16 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import dotenv from "dotenv";
 
-const API_KEY = 'AIzaSyBZ0uwFXjWWyvi0lx6wPr7lIYCdhC3sOTo';
+dotenv.config();
+
+const API_KEY = process.env.GEMINI_API_KEY;
 
 if (!API_KEY) {
   throw new Error("GEMINI_API_KEY is not defined in environment variables");
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
+
 
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 

@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
-import { uploadToLocalStorage } from '../services/storageService';
-import Picture from '../models/PictureModel';
-import { v4 as uuidv4 } from 'uuid';
-import { processMeterImage } from '../services/geminiService';
+import { Request, Response } from "express";
+import { uploadToLocalStorage } from "../services/storageService";
+import Picture from "../models/PictureModel";
+import { v4 as uuidv4 } from "uuid";
+import { processMeterImage } from "../services/geminiService";
 
 // Gera ID unico
 const generateUUID = (): string => uuidv4();
@@ -20,8 +20,8 @@ export const create = async (req: Request, res: Response) => {
     // Validade se todos os campos estão sendo enviados
     if (!image || !customer_code || !measure_datetime || !measure_type) {
       return res.status(400).json({
-        error_code: 'INVALID_DATA',
-        error_description: 'Todos os campos são obrigatórios',
+        error_code: "INVALID_DATA",
+        error_description: "Todos os campos são obrigatórios",
       });
     }
 
@@ -29,16 +29,16 @@ export const create = async (req: Request, res: Response) => {
     if (!isValidBase64Image(image)) {
       return res.status(400).json({
         error_code: "INVALID_DATA",
-        error_description: "Formato da imagem base64 inválido"
+        error_description: "Formato da imagem base64 inválido",
       });
     }
 
     //Valida o tipo de medição
     measure_type = measure_type.toUpperCase();
 
-    if (measure_type !== 'WATER' && measure_type !== 'GAS') {
+    if (measure_type !== "WATER" && measure_type !== "GAS") {
       return res.status(400).json({
-        error_code: 'INVALID_DATA',
+        error_code: "INVALID_DATA",
         error_description: "O tipo de medição deve ser 'WATER' ou 'GAS'",
       });
     }
@@ -47,8 +47,8 @@ export const create = async (req: Request, res: Response) => {
     const date = new Date(measure_datetime);
     if (isNaN(date.getTime())) {
       return res.status(400).json({
-        error_code: 'INVALID_DATA',
-        error_description: 'Formato de data/hora inválido',
+        error_code: "INVALID_DATA",
+        error_description: "Formato de data/hora inválido",
       });
     }
 
@@ -77,26 +77,26 @@ export const create = async (req: Request, res: Response) => {
     // Valida por tempo
     if (existingPicture) {
       return res.status(409).json({
-        error_code: 'DOUBLE_REPORT',
-        error_description: 'Leitura do mês já realizada',
+        error_code: "DOUBLE_REPORT",
+        error_description: "Leitura do mês já realizada",
       });
     }
 
     // Processa a imagem no serviço do google
-    const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
     let measure_value;
     try {
       measure_value = await processMeterImage(base64Data);
     } catch (err) {
-      console.error('Erro ao processar a imagem:', err);
+      console.error("Erro ao processar a imagem:", err);
       return res.status(500).json({
-        error_code: 'IMAGE_PROCESSING_ERROR',
-        error_description: 'Erro ao processar a imagem.',
+        error_code: "IMAGE_PROCESSING_ERROR",
+        error_description: "Erro ao processar a imagem.",
       });
     }
 
     // Faz upload da imagem no serviço de storage local e gera o link
-    const imageUrl = uploadToLocalStorage(base64Data, 'image/jpeg'); // Define o tipo de conteúdo conforme necessário
+    const imageUrl = uploadToLocalStorage(base64Data, "image/jpeg"); // Define o tipo de conteúdo conforme necessário
 
     // Cria a picture que irá ser salva
     const picture = new Picture({
@@ -119,8 +119,8 @@ export const create = async (req: Request, res: Response) => {
     });
   } catch (error) {
     return res.status(500).json({
-      error_code: 'SERVER_ERROR',
-      error_description: 'Ocorreu um erro ao processar a requisição',
+      error_code: "SERVER_ERROR",
+      error_description: "Ocorreu um erro ao processar a requisição",
     });
   }
 };

@@ -19,7 +19,6 @@ export const list = async (req: Request, res: Response) => {
 
     // Query para a busca
     const query: any = { customer_code };
-    console.log("Query:", query);
 
     // Verifica se tem o parametro opcional WATER ou GAS pra adicionar na query
     if (measure_type) {

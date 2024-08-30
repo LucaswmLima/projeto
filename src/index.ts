@@ -1,12 +1,13 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import addRouter from '../routes/addRoute';
-import confirmRouter from '../routes/confirmRoute';
-import listRouter from '../routes/listRoute';
+import addRouter from './api/routes/addRoute';
+import confirmRouter from './api/routes/confirmRoute';
+import listRouter from './api/routes/listRoute';
 import path from 'path';
 
 dotenv.config();
-require('../db/db');
+
+require('./config/dbConfig');
 
 const app = express();
 const port = process.env.PORT || 3000;
