@@ -78,29 +78,6 @@ A API permite o upload de imagens de medidores em formato base64, realiza a leit
    docker-compose up --build
    ```
 
-3. **Testar os Endpoints**: Use ferramentas como Postman ou Thunder Client para testar os endpoints da API.
-
-### Exemplos de Requisições
-
-- **Adicionar Medição**:
-  ```bash
-  curl -X POST http://localhost:3000/measurements \
-       -H "Content-Type: application/json" \
-       -d '{"image_base64": "base64string", "measure_type": "WATER", "customer_code": "12345"}'
-  ```
-
-- **Listar Mediçõees**:
-  ```bash
-  curl -X GET http://localhost:3000/measurements
-  ```
-
-- **Confirmar Medição**:
-  ```bash
-  curl -X PATCH http://localhost:3000/measurements/confirm \
-       -H "Content-Type: application/json" \
-       -d '{"measure_uuid": "uuid"}'
-  ```
-
 ## Testes
 
 O projeto inclui testes para garantir a funcionalidade da API. Para rodar os testes, utilize o seguinte comando:
