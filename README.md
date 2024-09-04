@@ -100,4 +100,4 @@ Se você deseja contribuir com o projeto, siga estas etapas:
 
 ## Contato
 
-Se você tiver alguma dúvida, entre em contato com [Seu Nome](mailto:seuemail@example.com).
+Se você tiver alguma dúvida, entre em contato com [Lucas William](mailto:lucaswilliamml@gmail.com).
