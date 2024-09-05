@@ -45,11 +45,11 @@ A API permite o upload de imagens de medidores em formato base64, realiza a leit
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
+   git clone https://github.com/LucaswmLima/projeto
    ```
 2. Navegue até o diretório do projeto:
    ```bash
-   cd SEU_REPOSITORIO
+   cd DIRETORIO_DO_PROJETO
    ```
 3. Instale as dependências:
    ```bash
